@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="js/index.js"></script>
+  <style>
+  :root{
+    --cream: #fbe8a6;
+    --brown_cream: #f4976c;
+    --blue: #303c6c;
+    --shade1: #b4dfe5;
+    --shade2: #d2fdff;
+  }
+    #status{
+  background-color: red;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+}
+#bio{
+  margin-top: 50px;
+  background-color: var(--blue);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+a{
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+}
+Body{
+  font-size: 20px;
+  background-color: var(--cream);
+}
+#Mainblock{
+  background-color: var(--brown_cream);
+  color: black;
+  padding: 10px;
+  border: 1px solid var(--shade3);
+  width: 95%;
+  border-radius: 20px;
+}
+input{
+  height: 30px;
+  width: 95%;
+  border-radius: 10px;
+  background-color: var(--shade1);
+}
+#Mainblock button{
+  font-size: 20px;
+  display: block;
+  margin: 20px auto;
+  border: 1px solid black;
+  background-color: var(--shade2);
+  border-radius: 10px;
+}
+textarea{
+  width: 95%;
+  height: 15rem;
+  margin-top: 10px;
+  padding: 10px;
+}
+#status{
+  background-color: red;
+  padding: 10px;
+  border-radius: 5px;
+  color: white;
+}.fa:hover{
+  opacity:0.7;
+}
+.fa{
+  font-size: 16px;
+}
+  </style>
+  <title>Notes Manager</title>
+  <div id="title">
+
+  <h2 style="text-align:center;">Secure notes Manager</h2>
+  </div>
+  <br />
+
+</head>
+<body>
+  <div id="Mainblock">
+     <div id="status" style="display:none;"></div>
+    <h5 class="title_entry">Enter Secret ID to Retrieve Data:</h5>
+    <input type="text" name="secret_id" id="secret_id"/>
+    <hr><h5 class="title_entry">Enter Your password:</h5>
+    <input type="text" name="password" id="pass">
+    <br />
+    <textarea name="data_area" id=data_area rows="8" cols="40"style="display:None;" readonly></textarea>
+    <button name="retrieve_data" onclick="getData()">Retrieve Data</button>
+    <button onclick="openCDpage()">Create Data</button>
+    
+      
+    </div>
+    <div id="bio">
+    <h5 >Made with 💚 by Mohammad Danish</h5>
+    <a href="https://github.com/itz-danish" class="fa fa-github"> @itz-danish</a><br />
+    <a href="https://instagram.com/_itz_danish_" class="fa fa-instagram"> @_itz_danish_</a>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    function getData(){
+  
+  let key = document.getElementById("pass").value;
+  
+  var phpFile = 'getData.php';
+  var secretId = document.getElementById("secret_id").value;
+    // AJAX POST request
+    $.ajax({
+        type: 'POST',
+        url: phpFile,
+        data: { action: 'getData', secret_id: secretId },
+        success: function(response) {
+            //console.log("encrypted text: ", response);
+            showData(response);
+        },
+        error: function(error) {
+            console.error('AJAX request failed:', error);
+        }
+    });
+}
+function openCDpage(){
+  window.open("createData.html","_blank");
+}
+function showData(response){
+  //console.log(response);
+  if (response=="No data found for secret_id"){
+    document.getElementById("status").style.display="block";
+      var myDi = document.getElementById("status");
+      myDi.innerHTML="No Data found!!!";
+      myDi.style.backgroundColor="red";
+      return;
+  }
+  let key = document.getElementById("pass").value;
+  let res=response;
+  document.getElementById("data_area").value=res;
+  document.getElementById("data_area").style.display="block";
+  let val = document.getElementById("data_area").value;
+  const dat = CryptoJS.AES.decrypt(val,key).toString(CryptoJS.enc.Utf8);
+  console.log(dat);
+  document.getElementById("data_area").value=dat;
+  
+}
+  </script>
+</body>
+</html>

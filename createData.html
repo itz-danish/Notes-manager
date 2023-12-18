@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    :root{
+    --cream: #fbe8a6;
+    --brown_cream: #f4976c;
+    --blue: #303c6c;
+    --shade1: #b4dfe5;
+    --shade2: #d2fdff;
+  }
+    #status{
+  background-color: red;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+}
+      Body{
+  font-size: 20px;
+  background-color: var(--cream);
+}
+#Mainblock{
+  background-color: var(--brown_cream);
+  color: black;
+  padding: 10px;
+  border: 1px solid var(--shade3);
+  width: 95%;
+  border-radius: 20px;
+  
+}
+input{
+  height: 30px;
+  width: 95%;
+  border-radius: 10px;
+  background-color: var(--shade1);
+  
+}
+#Mainblock button{
+  font-size: 20px;
+  display: block;
+  margin: 20px auto;
+  border: 1px solid black;
+  background-color: var(--shade2);
+  border-radius: 10px;
+  
+}
+textarea{
+  width: 95%;
+  height: 15rem;
+  margin-top: 10px;
+  padding: 10px;
+}
+#bio{
+  margin-top: 50px;
+  background-color: var(--blue);
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+a{
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+}
+.fa:hover{
+  opacity:0.7;
+}
+.fa{
+  font-size: 16px;
+}
+    </style>
+    <title>Upload Data</title>
+    <div id="title">
+
+  <h4 style="text-align:center;">Upload Data</h4>
+  </div>
+  <br />
+  </head><body>
+  <div id="Mainblock">
+    <div id="status" style="display:none;"></div>
+    <h5 class="title_entry">Set a Secret ID to Store Data:</h5>
+    <input type="text" name="secret_id" id="s_id_input"/><hr />
+    <h5 class="title_entry">Enter Your password:</h5>
+    <input type="text" name="password" id="pass">
+    <br />
+    <textarea id="text-data"></textarea>
+    <button value="retrieve_data" name="Upload_data" onclick="encrypt()">Upload Data</button>
+        <button onclick="homePG()">Get Data</button>
+    <div id="Data_field">
+      
+    </div>
+  </div>
+  <div id="bio">
+    <h5 >Made with 💚 by Mohammad Danish</h5>
+    <a href="https://github.com/itz-danish" class="fa fa-github"> @itz-danish</a><br />
+    <a href="https://instagram.com/_itz_danish_" class="fa fa-instagram"> @_itz_danish_</a>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    function encrypt(){
+      const s_id= document.getElementById("s_id_input").value;
+      const key= document.getElementById("pass").value;
+      const text_data=document.getElementById("text-data").value;
+      //console.log(key);
+      const encrypted =CryptoJS.AES.encrypt(text_data,key).toString();
+      const encrypt = encrypted;
+      console.log(encrypt);
+      const dat={
+        s_id: s_id, data: encrypted
+      }
+      console.log(s_id)
+      $.ajax({
+    type: 'POST',
+    url: 'sendData.php', // Update with your PHP file path
+    data: { 
+        action: 'saveToMySQL',
+        secretId: s_id,
+        data: encrypt
+    },
+    success: function(response) {
+        // Handle the response from the PHP function
+        console.log(response);
+        showStatus(response);
+    },
+    error: function(error) {
+        console.error('AJAX request failed:', error);
+    }
+          
+      });
+      const targetElement = document.getElementById("title");
+      targetElement.scrollIntoView({ behavior: "smooth" });
+    }
+    
+    function showStatus(response){
+      document.getElementById("status").style.display="block";
+      var myDiv = document.getElementById("status").innerHTML=response;
+      if (response=="Data saved successfully!"){
+        var myDiv0 = document.getElementById("status");
+        myDiv0.style.backgroundColor="#22fa01";
+      } else{
+        
+      }
+    }
+    function homePG(){
+      window.location.href="index.html";
+    }
+  </script>
+  
+</body>
+  
+</html>
